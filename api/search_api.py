@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from database.db import Database
 import sqlite3
 from collections import Counter
 import math
@@ -7,6 +8,7 @@ import os
 
 
 app = FastAPI()
+db = Database()
 
 
 # -------------------------------

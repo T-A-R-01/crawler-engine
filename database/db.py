@@ -7,18 +7,16 @@ class Database:
         self.create_table()
 
     def create_table(self):
-        query = """
+    cursor = self.conn.cursor()
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS pages (
             id SERIAL PRIMARY KEY,
-            url TEXT UNIQUE,
+            url TEXT,
             title TEXT,
             content TEXT
-        );
-        """
-        cursor = self.conn.cursor()
-        cursor.execute(query)
-        self.conn.commit()
-        cursor.close()
+        )
+    """)
+    self.conn.commit()
 
     def insert_page(self, url, title, content):
         try:

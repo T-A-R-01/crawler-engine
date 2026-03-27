@@ -2,6 +2,8 @@ from fastapi import FastAPI, Query
 import sqlite3
 from collections import Counter
 import math
+import psycopg2
+import os
 
 
 app = FastAPI()
@@ -13,13 +15,7 @@ app = FastAPI()
 
 
 def get_db_connection():
-    return psycopg2.connect(
-        dbname="crawler_db",
-        user="postgres",
-        password="YOUR_PASSWORD",
-        host="localhost",
-        port="5432"
-    )
+    return psycopg2.connect(os.getenv(postgresql://neondb_owner:npg_QvwHJ6xyq8SZ@ep-rough-pine-anfdi6ho-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require))
 
 
 # -------------------------------

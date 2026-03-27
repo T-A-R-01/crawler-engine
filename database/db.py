@@ -1,15 +1,9 @@
 import psycopg2
-
+import os
 
 class Database:
     def __init__(self):
-        self.conn = psycopg2.connect(
-            dbname="crawler_db",
-            user="postgres",
-            password="tushar",  # 🔥 replace this
-            host="localhost",
-            port="5432"
-        )
+        self.conn = psycopg2.connect(os.getenv("DATABASE_URL"))
         self.create_table()
 
     def create_table(self):

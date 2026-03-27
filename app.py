@@ -29,7 +29,9 @@ query = st.text_input("Enter your search query", placeholder="e.g. life, love, i
 if st.button("Search"):
     if query:
         try:
-            response = requests.get(f"http://127.0.0.1:8000/search?q={query}")
+            response = requests.get(
+    f"https://crawler-engine-r1l2.onrender.com/search?q={query}"
+)
             data = response.json()
 
             if not data:

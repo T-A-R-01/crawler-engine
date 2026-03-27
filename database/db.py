@@ -1,9 +1,11 @@
 import psycopg2
-import os
+
 
 class Database:
     def __init__(self):
-        self.conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+        self.conn = psycopg2.connect(
+            "postgresql://neondb_owner:npg_QvwHJ6xyq8SZ@ep-rough-pine-anfdi6ho-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require"
+        )
         self.create_table()
 
     def create_table(self):
@@ -11,7 +13,7 @@ class Database:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS pages (
                 id SERIAL PRIMARY KEY,
-                url TEXT,
+                url TEXT UNIQUE,
                 title TEXT,
                 content TEXT
             )
@@ -21,18 +23,14 @@ class Database:
     def insert_page(self, url, title, content):
         try:
             cursor = self.conn.cursor()
-
-            query = """
-            INSERT INTO pages (url, title, content)
-            VALUES (%s, %s, %s)
-            ON CONFLICT (url) DO NOTHING;
-            """
-
-            cursor.execute(query, (url, title, content))
+            cursor.execute("""
+                INSERT INTO pages (url, title, content)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (url) DO NOTHING
+            """, (url, title, content))
             self.conn.commit()
-            cursor.close()
-
         except Exception as e:
+            self.conn.rollback()
             print("DB Error:", e)
 
     def close(self):

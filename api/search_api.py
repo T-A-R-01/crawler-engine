@@ -15,7 +15,7 @@ app = FastAPI()
 
 
 def get_db_connection():
-    return psycopg2.connect(os.getenv(postgresql://neondb_owner:npg_QvwHJ6xyq8SZ@ep-rough-pine-anfdi6ho-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require))
+    return psycopg2.connect(os.getenv("DATABASE_URL"))
 
 
 # -------------------------------

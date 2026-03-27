@@ -25,7 +25,8 @@ def search(q: str = Query(..., min_length=1)):
     if not rows:
         return []
 
-    documents = [row[2] for row in rows]
+    documents = [row[2].lower() for row in rows]
+    q = q.lower()
 
     # Compute IDF
     idf = compute_idf(documents, q)
@@ -36,7 +37,7 @@ def search(q: str = Query(..., min_length=1)):
 
     # Compute scores
     for (url, title, content) in rows:
-        tf = compute_tf(content, q)
+        tf = compute_tf(doc.lower(), q)
         score = tf * idf
 
         if score > max_score:

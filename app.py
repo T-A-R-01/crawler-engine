@@ -1,57 +1,95 @@
 import streamlit as st
 import requests
-import re
 
-# 🔥 CONFIG
 API_URL = "https://crawler-engine-r1l2.onrender.com/search"
 
+st.set_page_config(page_title="Mini Search Engine", page_icon="🔍", layout="wide")
 
-# 🔥 HIGHLIGHT FUNCTION
-def highlight(text, query):
-    if not text:
-        return ""
-    return re.sub(
-        f"({query})",
-        r"<mark>\1</mark>",
-        text,
-        flags=re.IGNORECASE
-    )
+# ---------------- STYLES ----------------
+st.markdown("""
+<style>
+.title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.result-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+.result-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a0dab;
+}
+.result-link {
+    font-size: 14px;
+    color: green;
+}
+.snippet {
+    font-size: 14px;
+    color: #444;
+}
+.score {
+    font-size: 12px;
+    color: #888;
+}
+.highlight {
+    background-color: yellow;
+}
+</style>
+""", unsafe_allow_html=True)
 
+# ---------------- TITLE ----------------
+st.markdown('<div class="title">🔍 Mini Search Engine</div>', unsafe_allow_html=True)
 
-# 🔥 UI DESIGN
-st.set_page_config(page_title="Mini Search Engine", layout="wide")
+# ---------------- SEARCH ----------------
+query = st.text_input("Enter your search query", placeholder="e.g. life, inspiration")
 
-st.markdown("<h1 style='text-align:center;'>🔎 Mini Search Engine</h1>", unsafe_allow_html=True)
-
-query = st.text_input("Enter your search query", placeholder="e.g. life, love, inspiration")
-
-if st.button("Search") and query:
-
-    with st.spinner("Searching... 🔍"):
+if st.button("Search"):
+    if query:
         try:
-            response = requests.get(f"{API_URL}?q={query}")
+            response = requests.get(API_URL, params={"q": query})
+            results = response.json()
 
-            if response.status_code == 200:
-                results = response.json()
-
+            if len(results) == 0:
+                st.warning("No results found")
+            else:
                 st.success(f"Found {len(results)} results")
 
                 for r in results:
-                    st.markdown(f"### [{r['title']}]({r['url']})")
+                    title = r.get("title", "No title")
+                    url = r.get("url", "")
+                    content = r.get("content", "")
+                    score = round(r.get("score", 0), 5)
 
-                    st.caption(r["url"])
+                    # -------- SMART SNIPPET --------
+                    if query.lower() in content.lower():
+                        idx = content.lower().index(query.lower())
+                        start = max(0, idx - 80)
+                        end = idx + 120
+                        snippet = content[start:end] + "..."
+                    else:
+                        snippet = content[:200] + "..."
 
-                    # Highlighted snippet
-                    snippet = highlight(r["snippet"], query)
-                    st.markdown(snippet + "...", unsafe_allow_html=True)
+                    # -------- HIGHLIGHT --------
+                    snippet = snippet.replace(
+                        query,
+                        f"<span class='highlight'>{query}</span>"
+                    )
 
-                    # Score
-                    st.write(f"⭐ Relevance Score: **{r['score']}**")
+                    # -------- CARD UI --------
+                    st.markdown(f"""
+                    <div class="result-card">
+                        <div class="result-title">{title}</div>
+                        <div class="result-link">{url}</div>
+                        <div class="snippet">{snippet}</div>
+                        <div class="score">⭐ Score: {score}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-                    st.divider()
-
-            else:
-                st.error("Backend API error")
-
-        except Exception as e:
+        except:
             st.error("Backend API not reachable")

@@ -1,0 +1,47 @@
+import psycopg2
+
+
+class Database:
+    def __init__(self):
+        self.conn = psycopg2.connect(
+            dbname="crawler_db",
+            user="postgres",
+            password="tushar",  # 🔥 replace this
+            host="localhost",
+            port="5432"
+        )
+        self.create_table()
+
+    def create_table(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS pages (
+            id SERIAL PRIMARY KEY,
+            url TEXT UNIQUE,
+            title TEXT,
+            content TEXT
+        );
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        self.conn.commit()
+        cursor.close()
+
+    def insert_page(self, url, title, content):
+        try:
+            cursor = self.conn.cursor()
+
+            query = """
+            INSERT INTO pages (url, title, content)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (url) DO NOTHING;
+            """
+
+            cursor.execute(query, (url, title, content))
+            self.conn.commit()
+            cursor.close()
+
+        except Exception as e:
+            print("DB Error:", e)
+
+    def close(self):
+        self.conn.close()

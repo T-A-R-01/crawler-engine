@@ -37,7 +37,7 @@ def search(q: str = Query(..., min_length=1)):
 
     # Compute scores
     for (url, title, content) in rows:
-        tf = compute_tf(doc.lower(), q)
+        tf = compute_tf(content.lower(), q)
         score = tf * idf
 
         if score > max_score:

@@ -1,18 +1,28 @@
 import math
+import re
 
+def tokenize(text):
+    return re.findall(r'\b\w+\b', text.lower())
 
 def compute_tf(doc, query):
-    words = doc.lower().split()
-    return words.count(query.lower()) / len(words) if words else 0
+    words = tokenize(doc)
+    query_words = tokenize(query)
+
+    tf = 0
+    for q in query_words:
+        tf += words.count(q)
+
+    return tf / len(words) if len(words) > 0 else 0
 
 
 def compute_idf(documents, query):
-    count = 0
-    for doc in documents:
-        if query.lower() in doc.lower():
-            count += 1
+    query_words = tokenize(query)
+    N = len(documents)
 
-    if count == 0:
-        return 0
+    idf = 0
+    for q in query_words:
+        containing_docs = sum(1 for doc in documents if q in tokenize(doc))
+        if containing_docs > 0:
+            idf += math.log(N / containing_docs)
 
-    return math.log(len(documents) / count)
+    return idf

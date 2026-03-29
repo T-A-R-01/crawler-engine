@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Query
+from fastapi import FastAPI, APIRouter, Query
 from database.db import Database
 from ranking.tfidf import compute_idf
+
+app = FastAPI()  # REQUIRED
 
 router = APIRouter()
 
@@ -36,7 +38,6 @@ def search(q: str = Query(..., min_length=1)):
     conn = db.conn
     cursor = conn.cursor()
 
-    # Fetch all pages
     cursor.execute("SELECT url, title, content FROM pages")
     rows = cursor.fetchall()
 
@@ -45,13 +46,9 @@ def search(q: str = Query(..., min_length=1)):
     if not rows:
         return {"results": [], "count": 0}
 
-    # Split query into words
     query_words = q.lower().split()
-
-    # Prepare documents
     documents = [row[2] for row in rows]
 
-    # Compute IDF
     idf = compute_idf(documents, query_words)
 
     results = []
@@ -59,15 +56,14 @@ def search(q: str = Query(..., min_length=1)):
     for row in rows:
         url, title, content = row
 
-        # Base TF-IDF score
         score = compute_score(content, query_words, idf)
 
-        # Boost if words appear in title
+        # Title boost
         for word in query_words:
             if word in title.lower():
                 score *= 2
 
-        # Boost if words appear early in content
+        # Early position boost
         words = content.lower().split()
         for word in query_words:
             if word in words[:50]:
@@ -86,10 +82,13 @@ def search(q: str = Query(..., min_length=1)):
                 "snippet": generate_snippet(content, q)
             })
 
-    # Sort results
     results.sort(key=lambda x: x["score"], reverse=True)
 
     return {
         "results": results[:10],
         "count": len(results)
     }
+
+
+# THIS LINE FIXES YOUR DEPLOY ERROR
+app.include_router(router)

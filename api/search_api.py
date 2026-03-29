@@ -6,6 +6,9 @@ app = FastAPI()  # REQUIRED
 
 router = APIRouter()
 
+@app.get("/")
+def home():
+    return {"message": "Mini Search Engine API is running 🚀"}
 
 def compute_score(content, query_words, idf):
     words = content.lower().split()

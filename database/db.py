@@ -1,12 +1,12 @@
 import psycopg2
-
+import os
 
 class Database:
     def __init__(self):
-        self.conn = psycopg2.connect(
-            "postgresql://neondb_owner:npg_QvwHJ6xyq8SZ@ep-rough-pine-anfdi6ho-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require"
-        )
-        self.create_table()
+        self.conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+
+    def close(self):
+        self.conn.close()
 
     def create_table(self):
         cursor = self.conn.cursor()

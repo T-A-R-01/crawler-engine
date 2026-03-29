@@ -1,28 +1,47 @@
 import math
 import re
 
+
 def tokenize(text):
-    return re.findall(r'\b\w+\b', text.lower())
+    # remove punctuation + lowercase
+    return re.findall(r'\b[a-z]+\b', text.lower())
+
 
 def compute_tf(doc, query):
-    words = tokenize(doc)
+    doc_words = tokenize(doc)
     query_words = tokenize(query)
+
+    if not doc_words:
+        return 0
 
     tf = 0
     for q in query_words:
-        tf += words.count(q)
+        tf += doc_words.count(q) / len(doc_words)
 
-    return tf / len(words) if len(words) > 0 else 0
+    return tf
 
 
 def compute_idf(documents, query):
-    query_words = tokenize(query)
     N = len(documents)
+    query_words = tokenize(query)
 
-    idf = 0
+    idf = {}
+
     for q in query_words:
-        containing_docs = sum(1 for doc in documents if q in tokenize(doc))
-        if containing_docs > 0:
-            idf += math.log(N / containing_docs)
+        count = sum(1 for doc in documents if q in tokenize(doc))
+        idf[q] = math.log((N + 1) / (count + 1)) + 1  # smooth IDF
 
     return idf
+
+
+def compute_score(doc, query, idf):
+    doc_words = tokenize(doc)
+    query_words = tokenize(query)
+
+    score = 0
+
+    for q in query_words:
+        tf = doc_words.count(q) / len(doc_words) if doc_words else 0
+        score += tf * idf.get(q, 0)
+
+    return score

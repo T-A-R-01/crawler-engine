@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 import asyncio
 import aiohttp
 from urllib.parse import urlparse, urljoin
@@ -75,17 +77,17 @@ async def worker(session, scheduler, base_domain, db):
 
     print("Title:", data["title"])
 
-    # ✅ Debug print
+    # Debug print
     print(f"Saving: {data['url']}")
 
-    # ✅ Save to DB
+    # Save to DB
     db.insert_page(
         url=data["url"],
         title=data["title"],
         content=data["content"]
     )
 
-    # ✅ Process links
+    # Process links
     for link in data["links"]:
         absolute_url = urljoin(url, link)
         normalized = normalize_url(absolute_url)
@@ -99,7 +101,7 @@ async def worker(session, scheduler, base_domain, db):
 # -------------------------------
 async def crawl():
     scheduler = URLScheduler()
-    db = Database()  # ✅ initialize DB
+    db = Database()  # initialize DB
 
     seed_url = "https://quotes.toscrape.com"
     base_domain = "quotes.toscrape.com"
@@ -126,7 +128,7 @@ async def crawl():
 
             await asyncio.gather(*tasks)
 
-    db.close()  # ✅ close DB connection
+    db.close()  # close DB connection
 
 
 # -------------------------------

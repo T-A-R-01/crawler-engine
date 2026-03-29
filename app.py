@@ -87,7 +87,7 @@ if st.button("Search"):
                         <div class="result-title">{title}</div>
                         <div class="result-link">{url}</div>
                         <div class="snippet">{snippet}</div>
-                        <div class="score">⭐ Score: {score}</div>
+                        <div class="score"> Score: {score}</div>
                     </div>
                     """, unsafe_allow_html=True)
 

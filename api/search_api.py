@@ -40,6 +40,14 @@ def search(q: str = Query(..., min_length=1)):
 
             score = compute_score(content, q, idf)
 
+            # Exact match boost (ADD THIS HERE)
+            if q.lower() in content.lower():
+                score *= 1.2
+
+            # (optional but recommended)
+            if q.lower() in title.lower():
+                score *= 2
+
             results.append({
                 "url": url,
                 "title": title,

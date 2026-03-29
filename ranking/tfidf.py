@@ -43,6 +43,11 @@ def compute_score(doc, query, idf):
 
     score = 0
 
+    # Boost if word appears early
+    for q in query_words:
+        if q in doc_words[:50]:
+            score *= 1.5
+        
     for q in query_words:
         tf = doc_words.count(q) / len(doc_words)
         score += tf * idf.get(q, 0)

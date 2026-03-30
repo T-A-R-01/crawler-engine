@@ -1,6 +1,6 @@
 # 🔍 Mini Search Engine
 
-A full-stack mini search engine that crawls web pages, stores them in a database, and ranks results using TF-IDF.
+> 🚀 Built a full-stack search engine from scratch — including crawler, ranking algorithm, and deployed system
 
 ---
 

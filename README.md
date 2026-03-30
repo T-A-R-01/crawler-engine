@@ -81,6 +81,30 @@ Crawler → Parser → Database → Ranking → API → UI
 
 ---
 
+## 🚀 Why this project matters
+
+This project demonstrates how a real-world search system works end-to-end:
+
+- Data collection (crawler)
+- Processing (parser)
+- Storage (database)
+- Ranking (TF-IDF)
+- Serving (API)
+- Presentation (UI)
+
+It is not just a UI project — it is a full system design implementation.
+
+---
+
+## ⚡ Challenges Faced
+
+- Fixing PostgreSQL constraint errors
+- Handling async crawling properly
+- Debugging deployment issues (Render + Streamlit)
+- Getting TF-IDF scores correct (initially returning 0)
+  
+---
+
 ## 📬 Contact
 
 LinkedIn: https://www.linkedin.com/in/tushar-rai-7b8b792b8?utm_source=share_via&utm_content=profile&utm_medium=member_android 
